@@ -1,0 +1,15 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+E:\1 LDNamP\1 Nhu Y D\Du lieu\Du lieu\1 Thau kinh\File Thau kinh\TK000047\Den giao thong co chinh thoi gian - khong so - khong nguoi di bo\U33\Hello.uvproj
+Project File Date:  05/22/2019
+
+<h2>Output:</h2>
+Build target 'Simulator'
+assembling HELLO.asm...
+linking...
+Program Size: data=8.0 xdata=0 code=1289
+creating hex file from "HELLO"...
+"HELLO" - 0 Error(s), 0 Warning(s).

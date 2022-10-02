@@ -1,0 +1,1075 @@
+A51 MACRO ASSEMBLER  HELLO                                                                09/25/2020 17:42:43 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.02
+OBJECT MODULE PLACED IN HELLO.OBJ
+ASSEMBLER INVOKED BY: D:\Keil\C51\BIN\A51.EXE HELLO.asm SET(SMALL) DEBUG EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ;CHUONG TRINH DEN GIAO THONG
+                       2     ;KET VDK VOI CAC COT DEN BANG DU LIEU NOI TIEP 
+                       3     ;MOI COT DEN VOI 2 THANH GHI DICH 74595
+                       4     ;DAT1 BIT P2.0 ; CHAN DU LIEU 1
+                       5     ;DAT2 BIT P2.1 ; CHAN DU LIEU 2
+                       6     ;DA3 BIT P2.2 ; CHAN DU LIEU 3 CHO LED HIEN THI KHI CHINH
+                       7     ;CLOCK BIT P2.3 ;CHAN TAO XUNG CLOCK
+                       8     ;ST BIT P2.4 ; CHAT XUAT DU LIEU RA BO DEM TRONG IC74595
+                       9     ;OE BIT P2.5 ;CHAN CHO PHEP HIEN THI
+                      10                                                                         
+  00B5                11     DD1 BIT P3.5
+  00B3                12     DX1 BIT P3.3
+  00B4                13     DV1 BIT P3.4
+                      14     
+  00B2                15     DD2 BIT P3.2
+  0094                16     DX2 BIT P1.4 
+  0097                17     DV2 BIT P1.7 
+                      18     
+  00A0                19     LM BIT P2.0
+  00A1                20     LC BIT P2.1
+  00A2                21     LD BIT P2.2
+  00A3                22     LL BIT P2.3 
+                      23     
+  0080                24     LB BIT P0.0
+                      25     
+  0080                26     PL EQU P0 
+                      27     
+  0093                28     BT BIT P1.3;
+  0090                29     MODE BIT P1.0 ; CHON CHE DO DIEU CHINH
+  0092                30     TANG BIT P1.2 ; TANG
+  0091                31     GIAM BIT P1.1 ; GIAM
+  0001                32     LED_CHINH BIT 20H.1 ; LED HIEN THI KHI CHINH CHE DO
+  0002                33     BIT_GIAY BIT 20H.2 ; LED HIEN THI KHI CHINH CHE DO
+  REG                 34     TG1 EQU R7 ; THOI GIAN 1
+  REG                 35     TG2 EQU R6 ; THOI GIAN 2
+  0000                36     PN BIT 20H.0 ; BIT NHO CO PHIM NHAN
+  REG                 37     CHE_DO EQU R4 ;  CHE DO CHAY GOM 3 CHE DO CAI DAT DUOC, CHE DO = 0 DEN VANG CHOP TAT, CHE D
+                             O = 1, CHE DO = 2 DIEU CHINH DUOC THOI GIAN
+  REG                 38     CHINH EQU R5 ; CHINH GIA TRI, 
+                      39     ;CHINH = 1 CHINH CHE DO,
+                      40     ;NEU CHE DO KHAC 0 
+                      41     ;CHINH = 2 CHINH THOI GIAN DEN DO COT 1, CHINH = 3 CHINH THOI GIAN DEN XANH COT 1, CHINH = 
+                             4 CHINH DEN VANG COT 1, CHINH = 5 CHINH DEN VANG COT 2
+  0021                42     DEN_CHINH EQU 21H ; TRANG THAI DEN KHI CHINH THOI GIAN
+                      43     
+  002E                44     TGD11 EQU 2EH ; THOI GIAN DEN DO COT 1 CHE DO 1
+  002D                45     TGX11 EQU 2DH ; THOI GIAN DEN VANG COT 1 CHE DO 1
+  002C                46     TGV11 EQU 2CH ; THOI GIAN DEN VANG COT 1 CHE DO 1
+                      47     
+  002B                48     TGD21 EQU 2BH ; THOI GIAN DEN DO COT 2 CHE DO 1
+  002A                49     TGX21 EQU 2AH ; THOI GIAN DEN XANH COT 2 CHE DO 1
+  0029                50     TGV21 EQU 29H ; THOI GIAN DEN VANG COT 2 CHE DO 1
+                      51     
+  0028                52     TGD12 EQU 28H ; THOI GIAN DEN DO COT 1 CHE DO 2
+  0027                53     TGX12 EQU 27H ; THOI GIAN DEN DO COT 1 CHE DO 2
+  0026                54     TGV12 EQU 26H ; THOI GIAN DEN DO COT 1 CHE DO 2
+                      55     
+  0025                56     TGD22 EQU 25H ; DEN XANH 2 = TONG TG COT 1 - DEN DO 2 - DEN VANG 2
+A51 MACRO ASSEMBLER  HELLO                                                                09/25/2020 17:42:43 PAGE     2
+
+  0024                57     TGX22 EQU 24H ; DEN DO 2 = DEN XANH 1 + DEN VANG 1
+  0023                58     TGV22 EQU 23H ; THOI GIAN DEN VANG CHO COT 2 CHE DO 2
+                      59     
+  0022                60     TG_CHINH EQU 22H ; THOI GIAN HIEN THI KHI CHINH
+                      61     ;======================================== 
+0000                  62             ORG     0 ; DIEM NHAP RESET
+0000                  63     MAIN: ; BAT DAU CHUONG TRINH
+0000 C2B5             64             CLR DD1
+0002 C2B2             65             CLR DD2 
+0004 C2B4             66             CLR DV1
+0006 C297             67             CLR DV2
+0008 C2B3             68             CLR DX1
+000A C294             69             CLR DX2
+000C 79FA             70             MOV R1,#250
+000E                  71     ON_DINH:
+000E 5118             72             CALL DELAY;
+0010 D9FC             73             DJNZ R1,ON_DINH
+0012 7D00             74             MOV CHINH,#0
+0014 758130           75             MOV SP,#30H ; NAP VI TRI NGAN XEP BAT DAU TU 31H
+0017 90046B           76             MOV DPTR,#MA7DOAN ; NAP CON TRO DU LIEU VUNG MA 7 DOAN
+001A 752200           77             MOV TG_CHINH,#0 ; NAP THOI GIAN CHINH = 0  
+001D 7521FF           78             MOV DEN_CHINH,#0FFH ; TAT CAC DEN KHI CHINH
+0020 91AA             79             CALL DOC_TG ; DOC THOI GIAN DUOC LUU TRUOC DO TRONG EEPROM
+0022 B4AA02           80             CJNE A,#0AAH,MP1 ; KIEM TRA MA DA GHI TRUOC DO
+0025 801C             81             JMP MAIN1 ; NHAY DEN MAIN KHI THOI GIA CU DA DUOC GHI
+0027                  82     MP1: ; KHI TRONG EEPROM CHUA CO GIA TRI THOI GIAN
+0027 7C01             83             MOV CHE_DO,#1 ; NAP CHEO DO BAN DAU = 1
+0029 752E1E           84             MOV TGD11,#30 ; NAP GIA TRI MAC DINH CHO THOI GIAN
+002C 752D19           85             MOV TGX11,#25
+002F 752C08           86             MOV TGV11,#8
+0032 752908           87             MOV TGV21,#8
+                      88     
+0035 752832           89             MOV TGD12,#50
+0038 752728           90             MOV TGX12,#40
+003B 752605           91             MOV TGV12,#5
+003E 752305           92             MOV TGV22,#5
+0041 9176             93             CALL NAPTG ; NAP THOI GIAN VAO EEPROM DE LUU TRU THOI GIAN VA CHE DO KHI MAT DIEN
+0043                  94     MAIN1:
+0043 3163             95             CALL TINH_TG ; TINH THOI GIAN CHO CAC COT DEN
+0045 8C08             96             MOV     8,CHE_DO ; SUAT HIEN THI CHE DO HIEN TAI RA LED 7 DOAN
+0047 D201             97             SETB LED_CHINH
+0049                  98     CHUONG_TRINH_1: ; CHUONG TRINH 1 CHE DO BAN DEM, 2 DEN VANG CHOP TAT
+0049 BC0016           99             CJNE CHE_DO,#0,CHUONG_TRINH_2
+004C 7F00            100                     MOV TG1,#0 ; NAP THOI GIAN = 0
+004E 7E00            101                     MOV TG2,#0
+0050 3188            102                     CALL DOIMA 
+0052 3155            103                     CALL BAT_VANG2
+0054 7562FF          104                     MOV 62H,#11111111B ; BAT DEN VANG COT 2
+0057 914A            105                     CALL TRE ;GOI CHUONG TRINH TAO TRE 1 GIAY
+0059 3147            106                     CALL BAT_VANG1
+005B 7565FF          107                     MOV 65H,#11111111B ; BAT DEN VANG CON 1
+005E 914A            108                     CALL TRE ;GOI CHUONG TRINH TAO TRE 1 GIAY
+0060 80E7            109                     JMP CHUONG_TRINH_1 ; LAP LAI CHUONG TRINH
+                     110     ;---------------------------------------                
+0062                 111     CHUONG_TRINH_2:
+0062 BC013A          112             CJNE CHE_DO,#1,CHUONG_TRINH_3
+0065 AF2E            113             MOV TG1,TGD11 ; DAT THOI GIAN DEN DO COT DEN 1
+0067 AE2A            114             MOV TG2,TGX21 ; DAT THOI GIAN DEN XANH COT DEN 2
+0069 3121            115             CALL BAT_DO1
+006B                 116     M1:
+006B 3188            117             CALL DOIMA ; GOI CHUONG TRINH DOI MA BCD SANG MA 7 DOAN
+006D 914A            118             CALL TRE ; GOI CHUONG TRINH TAO TRE 1 GIAY
+006F 1F              119             DEC TG1 ; GIAM THOI GIAN
+0070 1E              120             DEC TG2 ; GIAM THOI GIAN
+0071 BE00F7          121             CJNE TG2,#0,M1 ; LAP LAI TOI KHI THOI GIAN COT DEN 2 = 0
+0074 AE29            122             MOV TG2,TGV21 ; NAP LAI THOI GIAN DEN VANG CHO COT DEN 2 
+A51 MACRO ASSEMBLER  HELLO                                                                09/25/2020 17:42:43 PAGE     3
+
+0076 3155            123             CALL BAT_VANG2
+0078                 124     M2:
+0078 3188            125             CALL DOIMA ; GOI CHUONG TRINH DOI MA BCD SANG MA 7 DOAN
+007A 914A            126             CALL TRE ; GOI CHUONG TRINH TAO TRE 1 GIAY
+007C 1F              127             DEC TG1
+007D 1E              128             DEC TG2
+007E BE00F7          129             CJNE TG2,#0,M2 ; LAP LAI TOI KHI THOI GIAN COT DEN 2 = 0
+0081 AF2D            130             MOV TG1,TGX11 ; DAT THOI GIAN COT DEN 1 15 GIAY
+0083 AE2B            131             MOV TG2,TGD21 ; DAT THOI GIAN COT DEN 2 20 GIAY
+0085 3134            132             CALL BAT_XANH1
+0087                 133     M3:
+0087 3188            134             CALL DOIMA ; GOI CHUONG TRINH DOI MA BCD SANG MA 7 DOAN
+0089 914A            135             CALL TRE ; GOI CHUONG TRINH TAO TRE 1 GIAY
+008B 1F              136             DEC TG1
+008C 1E              137             DEC TG2
+008D BF00F7          138             CJNE TG1,#0,M3 ; LAP LAI TOI KHI THOI GIAN COT DEN 1 = 0
+0090 AF2C            139             MOV TG1,TGV11 ; DAT THOI GIAN DEN VANG COT DEN 1
+0092 3147            140             CALL BAT_VANG1
+0094                 141     M4:     
+0094 3188            142             CALL DOIMA ;GOI CHUONG TRINH DOI MA BCD SANG MA 7 DOAN
+0096 914A            143             CALL TRE ;GOI CHUONG TRINH TAO TRE 1 GIAY
+0098 1F              144             DEC TG1
+0099 1E              145             DEC TG2
+009A BF00F7          146             CJNE TG1,#0,M4 ;LAP LAI TOI KHI THOI GIAN COT DEN 1 = 0
+009D 80C3            147             JMP CHUONG_TRINH_2 ;LAP LAI CHUONG TRINH
+                     148     ;--------------------------------------- 
+009F                 149     CHUONG_TRINH_3:
+009F BC023A          150             CJNE CHE_DO,#2,CHUONG_TRINH_4
+00A2 AF28            151             MOV TG1,TGD12 ; DAT THOI GIAN DEN DO COT DEN 1
+00A4 AE24            152             MOV TG2,TGX22 ; DAT THOI GIAN DEN XANH COT DEN 2
+00A6 3121            153             CALL BAT_DO1
+00A8                 154     CT31:
+00A8 3188            155             CALL DOIMA ;GOI CHUONG TRINH DOI MA BCD SANG MA 7 DOAN
+00AA 914A            156             CALL TRE ;GOI CHUONG TRINH TAO TRE 1 GIAY
+00AC 1F              157             DEC TG1
+00AD 1E              158             DEC TG2
+00AE BE00F7          159             CJNE TG2,#0,CT31 ;LAP LAI TOI KHI THOI GIAN COT DEN 2 = 0
+00B1 AE23            160             MOV TG2,TGV22 ; NAP LAI THOI GIAN CHO COT DEN 2 
+00B3 3155            161             CALL BAT_VANG2
+00B5                 162     CT32:
+00B5 3188            163             CALL DOIMA ;GOI CHUONG TRINH DOI MA BCD SANG MA 7 DOAN
+00B7 914A            164             CALL TRE ;GOI CHUONG TRINH TAO TRE 1 GIAY
+00B9 1F              165             DEC TG1
+00BA 1E              166             DEC TG2
+00BB BE00F7          167             CJNE TG2,#0,CT32 ;LAP LAI TOI KHI THOI GIAN COT DEN 2 = 0
+00BE AF27            168             MOV TG1,TGX12 ; DAT THOI GIAN DEN XANH COT 1 
+00C0 AE25            169             MOV TG2,TGD22 ; DAT THOI GIAN DEN DO COT 2
+00C2 3134            170             CALL BAT_XANH1
+00C4                 171     CT33:
+00C4 3188            172             CALL DOIMA ;GOI CHUONG TRINH DOI MA BCD SANG MA 7 DOAN
+00C6 914A            173             CALL TRE ;GOI CHUONG TRINH TAO TRE 1 GIAY
+00C8 1F              174             DEC TG1
+00C9 1E              175             DEC TG2
+00CA BF00F7          176             CJNE TG1,#0,CT33 ;LAP LAI TOI KHI THOI GIAN COT DEN 1 = 0
+00CD AF26            177             MOV TG1,TGV12 ; DAT THOI GIAN DEN VANG COT DEN 1
+00CF 3147            178             CALL BAT_VANG1
+00D1                 179     CT34:   
+00D1 3188            180             CALL DOIMA ;GOI CHUONG TRINH DOI MA BCD SANG MA 7 DOAN
+00D3 914A            181             CALL TRE ;GOI CHUONG TRINH TAO TRE 1 GIAY
+00D5 1F              182             DEC TG1
+00D6 1E              183             DEC TG2
+00D7 BF00F7          184             CJNE TG1,#0,CT34 ;LAP LAI TOI KHI THOI GIAN COT DEN 1 = 0
+00DA 80C3            185             JMP CHUONG_TRINH_3 ;LAP LAI CHUONG TRINH
+                     186     ;---------------------------------------- 
+00DC                 187     CHUONG_TRINH_4:
+00DC BC0340          188             CJNE CHE_DO,#3,CHUONG_TRINH_5
+A51 MACRO ASSEMBLER  HELLO                                                                09/25/2020 17:42:43 PAGE     4
+
+00DF 7F00            189             MOV TG1,#0 ; DAT THOI GIAN DEN DO COT DEN 1
+00E1 7E00            190             MOV TG2,#0 ; DAT THOI GIAN DEN XANH COT DEN 2
+00E3 3121            191             CALL BAT_DO1
+00E5                 192     CT41:
+00E5 BC0337          193             CJNE CHE_DO,#3,CHUONG_TRINH_5
+00E8 3188            194             CALL DOIMA ;GOI CHUONG TRINH DOI MA BCD SANG MA 7 DOAN
+00EA 914A            195             CALL TRE ;GOI CHUONG TRINH TAO TRE 1 GIAY
+00EC 2093F6          196             JB BT,CT41
+00EF 3155            197             CALL BAT_VANG2
+00F1                 198     CT42:
+00F1 3188            199             CALL DOIMA ;GOI CHUONG TRINH DOI MA BCD SANG MA 7 DOAN
+00F3 914A            200             CALL TRE ;GOI CHUONG TRINH TAO TRE 1 GIAY
+00F5 914A            201             CALL TRE ;GOI CHUONG TRINH TAO TRE 1 GIAY
+00F7 914A            202             CALL TRE ;GOI CHUONG TRINH TAO TRE 1 GIAY
+00F9 914A            203             CALL TRE ;GOI CHUONG TRINH TAO TRE 1 GIAY
+00FB 7F00            204             MOV TG1,#0 ; DAT THOI GIAN DEN XANH COT 1 
+00FD 7E00            205             MOV TG2,#0 ; DAT THOI GIAN DEN DO COT 2
+00FF 3134            206             CALL BAT_XANH1
+0101                 207     CT43:
+0101 BC031B          208             CJNE CHE_DO,#3,CHUONG_TRINH_5
+0104 3188            209             CALL DOIMA ;GOI CHUONG TRINH DOI MA BCD SANG MA 7 DOAN
+0106 914A            210             CALL TRE ;GOI CHUONG TRINH TAO TRE 1 GIAY
+0108 2093F6          211             JB BT,CT43
+010B 3147            212             CALL BAT_VANG1
+010D                 213     CT44:   
+010D 3188            214             CALL DOIMA ;GOI CHUONG TRINH DOI MA BCD SANG MA 7 DOAN
+010F 914A            215             CALL TRE ;GOI CHUONG TRINH TAO TRE 1 GIAY
+0111 914A            216             CALL TRE ;GOI CHUONG TRINH TAO TRE 1 GIAY
+0113 914A            217             CALL TRE ;GOI CHUONG TRINH TAO TRE 1 GIAY
+0115 914A            218             CALL TRE ;GOI CHUONG TRINH TAO TRE 1 GIAY
+0117 914A            219             CALL TRE ;GOI CHUONG TRINH TAO TRE 1 GIAY
+0119 7F00            220             MOV TG1,#0 ; DAT THOI GIAN DEN XANH COT 1 
+011B 7E00            221             MOV TG2,#0 ; DAT THOI GIAN DEN DO COT 2
+011D 80BD            222             JMP CHUONG_TRINH_4 ;LAP LAI CHUONG TRINH
+011F                 223     CHUONG_TRINH_5:
+011F 0149            224             JMP CHUONG_TRINH_1
+                     225     ;======================================== 
+0121                 226     BAT_DO1:
+0121 75626F          227             MOV 62H,#01101111B ; BAT COT DEN DO COT 1, DEN XANH CHO NGUOI DI BO
+0124 7565B7          228             MOV 65H,#10110111B ; BAT DEN XANH CHO COT 2, DEN DO CHO NGUOI DI BO
+0127 C2B3            229             CLR DX1
+0129 C2B4            230             CLR DV1
+012B D2B5            231             SETB DD1
+012D C2B2            232             CLR DD2
+012F C297            233             CLR DV2
+0131 D294            234             SETB DX2
+0133 22              235             RET
+                     236     ;======================================== 
+0134                 237     BAT_XANH1:
+0134 7562B7          238             MOV 62H,#10110111B ; CHUYEN DEN XANH CHO COT 1, BAT DEN DO CHO NGUOI DI BO
+0137 75656F          239             MOV 65H,#01101111B ;CHUYEN DEN DO CHO COT 2, DEN XANH CHO NGUOI DI BO
+013A C2B5            240             CLR DD1
+013C C2B4            241             CLR DV1
+013E D2B3            242             SETB DX1
+0140 C294            243             CLR DX2
+0142 C297            244             CLR DV2
+0144 D2B2            245             SETB DD2
+0146 22              246             RET
+                     247     ;======================================== 
+0147                 248     BAT_VANG1:
+0147 7562DF          249             MOV 62H,#11011111B ;CHUYEN DEN VANG CHO COT 1, TAT DEN CHO NGUOI DI BO
+014A C2B5            250             CLR DD1
+014C C2B3            251             CLR DX1
+014E D2B4            252             SETB DV1
+0150 C297            253             CLR DV2
+0152 C294            254             CLR DX2
+A51 MACRO ASSEMBLER  HELLO                                                                09/25/2020 17:42:43 PAGE     5
+
+0154 22              255             RET
+                     256     ;======================================== 
+0155                 257     BAT_VANG2:
+0155 7565DF          258             MOV 65H,#11011111B ;CHUYEN DEN VANG CHO COT 1, TAT DEN CHO NGUOI DI BO
+0158 C2B2            259             CLR DD2
+015A C294            260             CLR DX2
+015C D297            261             SETB DV2
+015E C2B4            262             CLR DV1
+0160 C2B3            263             CLR DX1
+0162 22              264             RET
+                     265     ;======================================== 
+0163                 266     TINH_TG: ; TINH THOI GIAN 
+0163 C0E0            267             PUSH ACC ; CAT TAM GIA TRI THANH GHI A VAO NGAN XEP 
+0165 E52D            268             MOV A,TGX11 ; NAP A THOI GIAN DEN XANH COT 1
+0167 252C            269             ADD A,TGV11 ; CONG THOI GIAN DEN XANH COT 1 VOI THOI GIAN DEN VANG COT 1
+0169 F52B            270             MOV TGD21,A ; THOI GIAN DEN DO COT 2 BANG TONG THOI GIAN DEN XANH + DEN VANG COT 1
+016B 252E            271             ADD A,TGD11 ; TINH TONG THOI GIAN CHO COT 1
+016D C3              272             CLR C ; XOA CO C CHO PHE TRU KHONG MUON
+016E 952B            273             SUBB A,TGD21 ; TRU THOI GIAN DEN DO COT 2 
+0170 C3              274             CLR C
+0171 9529            275             SUBB A,TGV21 ; TRU THOI GIAN DEN VANG COT 2
+0173 F52A            276             MOV TGX21,A ; NAP THOI GIAN DEN XANH COT 2 = TONG THOI GIAN DEN COT 1 - DEN THOI GI
+                             AN DEN DO COT 2 - THOI GIAN DEN VANG COT 2
+                     277             
+0175 E527            278             MOV A,TGX12
+0177 2526            279             ADD A,TGV12
+0179 F525            280             MOV TGD22,A
+017B 2528            281             ADD A,TGD12 ; TINH TONG THOI GIAN CHO COT 1
+017D C3              282             CLR C
+017E 9525            283             SUBB A,TGD22 ; TRU TONG THOI GIAN COT 1 - TG DEN DO COT 2
+0180 C3              284             CLR C
+0181 9523            285             SUBB A,TGV22
+0183 F524            286             MOV TGX22,A ; NAP THOI GIAN DEN XANH COT 2
+0185 D0E0            287             POP ACC ; LAY LAI GIA TRI CHO THANH GHI A TU NGAN XEP 
+0187 22              288             RET ; TROAT KHOI CHUONG TRINH CON 
+                     289     ;======================================== 
+                     290     ;CHUONG TRINH DOI MA NHI PHAN SANG MA 7 DOAN
+0188                 291     DOIMA:                                          
+0188 C0E0            292             PUSH ACC ; CAT TAM GIA TRI THANH GHI A VAO NGAN XEP 
+018A EF              293             MOV A,TG1 ;DUA THOI GIAN 1 VAO A
+018B 75F00A          294             MOV B,#10
+018E 84              295             DIV AB
+018F 93              296             MOVC A,@A+DPTR ;LAY MA THEO VI TRI
+0190 F560            297             MOV 60H,A ;LUU MA 7 DOAN HANG CHUC THOI GIAN 1 VAO 60H
+0192 E5F0            298             MOV A,B
+0194 93              299             MOVC A,@A+DPTR ;LAY MA THEO VI TRI
+0195 F561            300             MOV     61H,A ;LUU MA 7 DOAN HANG DON VI THOI GIAN 1 VAO 61H
+                     301     
+0197 EE              302             MOV A,TG2 ;DUA THOI GIAN 2 VAO A
+0198 75F00A          303             MOV B,#10
+019B 84              304             DIV AB
+019C 93              305             MOVC A,@A+DPTR ;LAY MA THEO VI TRI
+019D F563            306             MOV 63H,A ;LUU MA 7 DOAN HANG CHUC THOI GIAN 2 VAO 63H
+019F E5F0            307             MOV A,B
+01A1 93              308             MOVC A,@A+DPTR ;LAY MA THEO VI TRI
+01A2 F564            309             MOV     64H,A ;LUU MA 7 DOAN HANG DON VI THOI GIAN 2 VAO 64H
+                     310             
+01A4 E522            311             MOV A,TG_CHINH ;DUA THOI GIAN 2 VAO A
+01A6 75F00A          312             MOV B,#10
+01A9 84              313             DIV AB
+01AA 93              314             MOVC A,@A+DPTR ;LAY MA THEO VI TRI
+01AB F567            315             MOV 67H,A ;LUU MA 7 DOAN HANG CHUC THOI GIAN 2 VAO 63H
+01AD E5F0            316             MOV A,B
+01AF 93              317             MOVC A,@A+DPTR ;LAY MA THEO VI TRI
+01B0 F566            318             MOV     66H,A ;LUU MA 7 DOAN HANG DON VI THOI GIAN 2 VAO 64H
+01B2 E508            319             MOV A,8
+A51 MACRO ASSEMBLER  HELLO                                                                09/25/2020 17:42:43 PAGE     6
+
+01B4 93              320             MOVC A,@A+DPTR ;LAY MA THEO VI TRI
+01B5 F569            321             MOV     69H,A ;LUU MA 7 DOAN HANG DON VI THOI GIAN 2 VAO 64H
+01B7 D0E0            322             POP ACC ; LAY LAI GIA TRI CHO THANH GHI A TU NGAN XEP 
+01B9 22              323             RET ;THOAT KHOI CHUONG TRINH CON
+                     324     ;======================================== 
+01BA                 325     HIENTHI: ; CHUONG TRINH QUET LED HIEN THI THOI GAN VÀ TRANG THÁI DEN
+01BA BD002E          326             CJNE CHINH,#0,ht2
+01BD 856080          327             MOV PL,60H
+01C0 C2A1            328             CLR LC
+01C2 5118            329             CALL DELAY ;TAO TRE CO LED
+01C4 D2A1            330             SETB LC
+01C6 856180          331             MOV PL,61H
+01C9 A202            332             MOV C,BIT_GIAY
+01CB 9280            333             MOV LB,C
+01CD C2A2            334             CLR LD
+01CF 5118            335             CALL DELAY ;TAO TRE CO LED
+01D1 D2A2            336             SETB LD
+01D3 852180          337             MOV PL,DEN_CHINH
+01D6 C2A3            338             CLR LL
+01D8 5118            339             CALL DELAY ;TAO TRE CO LED
+01DA D2A3            340             SETB LL
+01DC 856980          341             MOV PL,69H
+01DF A201            342             MOV C,LED_CHINH
+01E1 9280            343             MOV LB,C
+01E3 C2A0            344             CLR LM
+01E5 5118            345             CALL DELAY ;TAO TRE CO LED
+01E7 D2A0            346             SETB LM
+01E9 802C            347             jmp tht
+01EB                 348             ht2: 
+01EB 856780          349             MOV PL,67H
+01EE C2A1            350             CLR LC
+01F0 5118            351             CALL DELAY ;TAO TRE CO LED
+01F2 D2A1            352             SETB LC
+01F4 856680          353             MOV PL,66H
+01F7 A202            354             MOV C,BIT_GIAY
+01F9 9280            355             MOV LB,C
+01FB C2A2            356             CLR LD
+01FD 5118            357             CALL DELAY ;TAO TRE CO LED
+01FF D2A2            358             SETB LD
+0201 852180          359             MOV PL,DEN_CHINH
+0204 C2A3            360             CLR LL
+0206 5118            361             CALL DELAY ;TAO TRE CO LED
+0208 D2A3            362             SETB LL
+020A 856980          363             MOV PL,69H
+020D A201            364             MOV C,LED_CHINH
+020F 9280            365             MOV LB,C
+0211 C2A0            366             CLR LM
+0213 5118            367             CALL DELAY ;TAO TRE CO LED
+0215 D2A0            368             SETB LM
+0217                 369     tht:
+0217 22              370             RET
+                     371     ;============================
+                     372     ;CHUONG TRINH CON TAO THOI GIAN TRE CHO LED
+0218                 373     DELAY:  
+0218 C000            374             PUSH 0
+021A C001            375             PUSH 1
+021C 7905            376             MOV R1,#5
+021E                 377     DEL:
+021E 78FA            378             MOV R0,#250
+0220 D8FE            379             DJNZ R0,$
+0222 D9FA            380             DJNZ R1,DEL
+0224 D001            381             POP     1
+0226 D000            382             POP     0
+0228 22              383             RET
+                     384     ;======================================== 
+0229                 385     QUET_PHIM_NHAN: ; QUET NUT NHAN
+A51 MACRO ASSEMBLER  HELLO                                                                09/25/2020 17:42:43 PAGE     7
+
+0229 C0E0            386             PUSH ACC
+022B 30001B          387             JNB PN,NKN ; KIEM TRA KHONG NHAN NUT KHI PN = 0
+022E 209206          388                     JB TANG,QPN1
+0231 C200            389                             CLR PN
+0233 710F            390                             CALL NHAN_TANG
+0235 801F            391                             JMP TQPN
+0237                 392             QPN1:
+0237 209106          393                     JB GIAM,QPN2
+023A C200            394                             CLR PN
+023C 5159            395                             CALL NHAN_GIAM
+023E 8016            396                             JMP TQPN
+0240                 397             QPN2:
+0240 209013          398                     JB MODE,TQPN
+0243 C200            399                             CLR PN
+0245 71C5            400                             CALL NHAN_MODE
+0247 800D            401                             JMP TQPN
+0249                 402     NKN: ; KIEM TRA NUT KHONG NHAN
+0249 30920A          403             JNB TANG,TQPN
+024C 309107          404             JNB GIAM,TQPN
+024F 309004          405             JNB MODE,TQPN
+0252 D200            406                     SETB PN ; PN = 1 ; CHO PHEP NHAN PHIM TIEPP THEO
+0254 3188            407                     CALL DOIMA
+0256                 408     TQPN: ; THOAT QUET PHIM NHAN
+0256 D0E0            409             POP ACC
+0258 22              410             RET
+                     411     ;========================================
+0259                 412     NHAN_GIAM: ; KHI NHAN NUT GIAM
+0259 C0E0            413             PUSH ACC ; CAT TAM GIA TRI THANH GHI A VAO NGAN XEP 
+025B BD010A          414             CJNE CHINH,#1,NG1
+025E 1C              415                     DEC CHE_DO ; GIAM CHE DO
+025F BCFF02          416                     CJNE CHE_DO,#255,NG0 ; GIOI HAN TU 0-2
+0262 7C03            417                     MOV CHE_DO,#3
+0264                 418             NG0:
+0264 8C08            419                     MOV     8,CHE_DO
+0266 610C            420                     JMP TNG ; NHAY TOI THOAT NHAN GIAM
+0268                 421     NG1:
+0268 BD0226          422             CJNE CHINH,#2,NG2 ; KHI CHINH = 2
+026B BC010F          423                     CJNE CHE_DO,#1,NG11 ; KIEM TRA CHE DO
+026E 152E            424                             DEC TGD11 ; GIAM THOI GIAN DEN DO COT 1 CHO CHE DO TUONG UNG KHI CH
+                             E DO = 1
+0270 E52E            425                             MOV A,TGD11
+0272 B40403          426                             CJNE A,#4,NG10
+0275 752E5A          427                                     MOV TGD11,#90 ; GIOI HAN TU 10 -  90
+0278                 428                     NG10:
+0278 852E22          429                             MOV TG_CHINH,TGD11
+027B 8010            430                             JMP TNG1
+027D                 431             NG11:
+027D BC020D          432                     CJNE CHE_DO,#2,TNG1
+0280 1528            433                             DEC TGD12
+0282 E528            434                             MOV A,TGD12
+0284 B40403          435                             CJNE A,#4,NG13
+0287 75285A          436                                     MOV TGD12,#90
+028A                 437                     NG13:
+028A 852822          438                             MOV TG_CHINH,TGD12
+028D                 439             TNG1:
+028D 3163            440                     CALL TINH_TG
+028F 807B            441                     JMP TNG
+                     442     ;--------------------------------------- 
+0291                 443     NG2:
+0291 BD0326          444             CJNE CHINH,#3,NG3
+0294 BC010F          445                     CJNE CHE_DO,#1,NG21
+0297 152D            446                             DEC TGX11
+0299 E52D            447                             MOV A,TGX11
+029B B40403          448                             CJNE A,#4,NG20
+029E 752D5A          449                                     MOV TGX11,#90
+02A1                 450                     NG20:
+A51 MACRO ASSEMBLER  HELLO                                                                09/25/2020 17:42:43 PAGE     8
+
+02A1 852D22          451                             MOV TG_CHINH,TGX11
+02A4 8010            452                             JMP TNG2
+02A6                 453             NG21:
+02A6 BC020D          454                     CJNE CHE_DO,#2,TNG2
+02A9 1527            455                             DEC TGX12
+02AB E527            456                             MOV A,TGX12
+02AD B40403          457                             CJNE A,#4,NG23
+02B0 75275A          458                                     MOV TGX12,#90
+02B3                 459                     NG23:
+02B3 852722          460                             MOV TG_CHINH,TGX12
+02B6                 461             TNG2:
+02B6 3163            462                     CALL TINH_TG
+02B8 8052            463                     JMP TNG
+                     464     ;--------------------------------------- 
+02BA                 465     NG3:
+02BA BD0426          466             CJNE CHINH,#4,NG4
+02BD BC010F          467                     CJNE CHE_DO,#1,NG31
+02C0 152C            468                             DEC TGV11
+02C2 E52C            469                             MOV A,TGV11
+02C4 B40003          470                             CJNE A,#0,NG30
+02C7 752C0F          471                                     MOV TGV11,#15
+02CA                 472                     NG30:
+02CA 852C22          473                             MOV TG_CHINH,TGV11
+02CD 8010            474                             JMP TNG3
+02CF                 475             NG31:
+02CF BC020D          476                     CJNE CHE_DO,#2,TNG3
+02D2 1526            477                             DEC TGV12
+02D4 E526            478                             MOV A,TGV12
+02D6 B40003          479                             CJNE A,#0,NG33
+02D9 75260F          480                                     MOV TGV12,#15
+02DC                 481                     NG33:
+02DC 852622          482                             MOV TG_CHINH,TGV12
+02DF                 483             TNG3:
+02DF 3163            484                     CALL TINH_TG
+02E1 8029            485                     JMP TNG
+                     486     ;--------------------------------------- 
+02E3                 487     NG4:
+02E3 BD0526          488             CJNE CHINH,#5,TNG
+02E6 BC010F          489                     CJNE CHE_DO,#1,NG41
+02E9 1529            490                             DEC TGV21
+02EB E529            491                             MOV A,TGV21
+02ED B40003          492                             CJNE A,#0,NG40
+02F0 75290F          493                                     MOV TGV21,#15
+02F3                 494                     NG40:
+02F3 852922          495                             MOV TG_CHINH,TGV21
+02F6 80E7            496                             JMP TNG3
+02F8                 497             NG41:
+02F8 BC020D          498                     CJNE CHE_DO,#2,TNG4
+02FB 1523            499                             DEC TGV22
+02FD E523            500                             MOV A,TGV22
+02FF B40003          501                             CJNE A,#0,NG43
+0302 75230F          502                                     MOV TGV22,#15
+0305                 503                     NG43:
+0305 852322          504                             MOV TG_CHINH,TGV22
+0308                 505             TNG4:
+0308 3163            506                     CALL TINH_TG
+030A 8000            507                     JMP TNG
+030C                 508     TNG:
+030C D0E0            509             POP ACC ; LAY LAI GIA TRI CHO THANH GHI A TU NGAN XEP 
+030E 22              510             RET
+                     511     ;======================================== 
+030F                 512     NHAN_TANG: ; XU LY KHI NHAN TANG
+030F C0E0            513             PUSH ACC ; CAT TAM GIA TRI THANH GHI A VAO NGAN XEP 
+0311 BD010A          514             CJNE CHINH,#1,NT1
+0314 0C              515                     INC CHE_DO
+0315 BC0402          516                     CJNE CHE_DO,#4,NT0
+A51 MACRO ASSEMBLER  HELLO                                                                09/25/2020 17:42:43 PAGE     9
+
+0318 7C00            517                     MOV CHE_DO,#0
+031A                 518             NT0:
+031A 8C08            519                     MOV     8,CHE_DO
+031C 61C2            520                     JMP TNT
+031E                 521     NT1:
+031E BD0226          522             CJNE CHINH,#2,NT2
+0321 BC010F          523                     CJNE CHE_DO,#1,NT11
+0324 052E            524                             INC TGD11
+0326 E52E            525                             MOV A,TGD11
+0328 B45B03          526                             CJNE A,#91,NT10
+032B 752E05          527                                     MOV TGD11,#5
+032E                 528                     NT10:
+032E 852E22          529                             MOV TG_CHINH,TGD11
+0331 8010            530                             JMP TNT1
+0333                 531             NT11:
+0333 BC020D          532                     CJNE CHE_DO,#2,TNT1
+0336 0528            533                             INC TGD12
+0338 E528            534                             MOV A,TGD12
+033A B45B03          535                             CJNE A,#91,NT13
+033D 752805          536                                     MOV TGD12,#5
+0340                 537                     NT13:
+0340 852822          538                             MOV TG_CHINH,TGD12
+0343                 539             TNT1:
+0343 3163            540                     CALL TINH_TG
+0345 807B            541                     JMP TNT
+                     542     ;--------------------------------------- 
+0347                 543     NT2:
+0347 BD0326          544             CJNE CHINH,#3,NT3
+034A BC010F          545                     CJNE CHE_DO,#1,NT21
+034D 052D            546                             INC TGX11
+034F E52D            547                             MOV A,TGX11
+0351 B45B03          548                             CJNE A,#91,NT20
+0354 752D05          549                                     MOV TGX11,#5
+0357                 550                     NT20:
+0357 852D22          551                             MOV TG_CHINH,TGX11
+035A 8010            552                             JMP TNT2
+035C                 553             NT21:
+035C BC020D          554                     CJNE CHE_DO,#2,TNT2
+035F 0527            555                             INC TGX12
+0361 E527            556                             MOV A,TGX12
+0363 B45B03          557                             CJNE A,#91,NT23
+0366 752705          558                                     MOV TGX12,#5
+0369                 559                     NT23:
+0369 852722          560                             MOV TG_CHINH,TGX12
+036C                 561             TNT2:
+036C 3163            562                     CALL TINH_TG
+036E 8052            563                     JMP TNT
+                     564     ;--------------------------------------- 
+0370                 565     NT3:
+0370 BD0426          566             CJNE CHINH,#4,NT4
+0373 BC010F          567                     CJNE CHE_DO,#1,NT31
+0376 052C            568                             INC TGV11
+0378 E52C            569                             MOV A,TGV11
+037A B41003          570                             CJNE A,#16,NT30
+037D 752C01          571                                     MOV TGV11,#1
+0380                 572                     NT30:
+0380 852C22          573                             MOV TG_CHINH,TGV11
+0383 8010            574                             JMP TNT3
+0385                 575             NT31:
+0385 BC020D          576                     CJNE CHE_DO,#2,TNT3
+0388 0526            577                             INC TGV12
+038A E526            578                             MOV A,TGV12
+038C B41003          579                             CJNE A,#16,NT33
+038F 752601          580                                     MOV TGV12,#1
+0392                 581                     NT33:
+0392 852622          582                             MOV TG_CHINH,TGV12
+A51 MACRO ASSEMBLER  HELLO                                                                09/25/2020 17:42:43 PAGE    10
+
+0395                 583             TNT3:
+0395 3163            584                     CALL TINH_TG
+0397 8029            585                     JMP TNT
+                     586     ;--------------------------------------- 
+0399                 587     NT4:
+0399 BD0526          588             CJNE CHINH,#5,TNT
+039C BC010F          589                     CJNE CHE_DO,#1,NT41
+039F 0529            590                             INC TGV21
+03A1 E529            591                             MOV A,TGV21
+03A3 B41003          592                             CJNE A,#16,NT40
+03A6 752901          593                                     MOV TGV21,#1
+03A9                 594                     NT40:
+03A9 852922          595                             MOV TG_CHINH,TGV21
+03AC 80E7            596                             JMP TNT3
+03AE                 597             NT41:
+03AE BC020D          598                     CJNE CHE_DO,#2,TNT4
+03B1 0523            599                             INC TGV22
+03B3 E523            600                             MOV A,TGV22
+03B5 B41003          601                             CJNE A,#16,NT43
+03B8 752301          602                                     MOV TGV22,#1
+03BB                 603                     NT43:
+03BB 852322          604                             MOV TG_CHINH,TGV22
+03BE                 605             TNT4:
+03BE 3163            606                     CALL TINH_TG
+03C0 8000            607                     JMP TNT
+03C2                 608     TNT:
+03C2 D0E0            609             POP ACC ; LAY LAI GIA TRI CHO THANH GHI A TU NGAN XEP 
+03C4 22              610             RET
+                     611     ;======================================== 
+03C5                 612     NHAN_MODE: ; XU LY KHI NHAN MODE
+03C5 0D              613             INC CHINH
+03C6 BD0106          614             CJNE CHINH,#1,NM1
+03C9 C201            615                     CLR LED_CHINH ; BAT LED VAO CHINH KHI CHINH CHE DO
+03CB 8C08            616                     MOV     8,CHE_DO ; XUAT HIEN THI CHE DO HIEN TAI
+03CD 807A            617                     JMP TNM
+03CF                 618     NM1:
+03CF BD0212          619             CJNE CHINH,#2,NM2
+03D2 75217F          620                     MOV DEN_CHINH,#01111111B ; BAT DEN DO CHINH, KHI CHINH DEN DO
+03D5 750801          621                     MOV     8,#1 ;LUU MA 7 DOAN HANG DON VI THOI GIAN 1 VAO 61H
+03D8 BC0103          622                     CJNE CHE_DO,#1,NM11
+03DB 852E22          623                             MOV TG_CHINH,TGD11 ; HIEN THI LEN THOI GIAN CHINH KHI CHINH, TUONG 
+                             UNG VOI CHE DO
+03DE                 624             NM11:
+03DE BC0203          625                     CJNE CHE_DO,#2,NM2
+03E1 852822          626                             MOV TG_CHINH,TGD12      
+                     627     ;--------------------------------------- 
+03E4                 628     NM2:
+03E4 BD030F          629             CJNE CHINH,#3,NM3
+03E7 7521BF          630                     MOV DEN_CHINH,#10111111B ; HIEN THI CHINH DEN XANH
+03EA BC0103          631                     CJNE CHE_DO,#1,NM21
+03ED 852D22          632                             MOV TG_CHINH,TGX11
+03F0                 633             NM21:
+03F0 BC0203          634                     CJNE CHE_DO,#2,NM3
+03F3 852722          635                             MOV TG_CHINH,TGX12
+                     636     ;--------------------------------------- 
+03F6                 637     NM3:
+03F6 BD040F          638             CJNE CHINH,#4,NM4
+03F9 7521DF          639                     MOV DEN_CHINH,#11011111B ; HIEN THI CHINH DEN VANG
+03FC BC0103          640                     CJNE CHE_DO,#1,NM31
+03FF 852C22          641                             MOV TG_CHINH,TGV11
+0402                 642             NM31:
+0402 BC0203          643                     CJNE CHE_DO,#2,NM4
+0405 852622          644                             MOV TG_CHINH,TGV12
+                     645     ;--------------------------------------- 
+0408                 646     NM4:
+0408 BD050F          647             CJNE CHINH,#5,NM5
+A51 MACRO ASSEMBLER  HELLO                                                                09/25/2020 17:42:43 PAGE    11
+
+040B 750802          648                     MOV     8,#2
+040E BC0103          649                     CJNE CHE_DO,#1,NM41
+0411 852922          650                             MOV TG_CHINH,TGV21
+0414                 651             NM41:
+0414 BC0203          652                     CJNE CHE_DO,#2,NM5
+0417 852322          653                             MOV TG_CHINH,TGV22
+                     654     ;--------------------------------------- 
+041A                 655     NM5:
+041A D201            656             SETB LED_CHINH
+041C BD060C          657             CJNE CHINH,#6,NM6
+041F 752200          658                     MOV TG_CHINH,#0
+0422 7521FF          659                     MOV DEN_CHINH,#11111111B ; TAT HIEN THI CHINH
+0425 7D00            660                     MOV CHINH,#0 ; NAP CHINH LAI VE 0
+0427 8C08            661                     MOV     8,CHE_DO
+0429 9176            662                     CALL NAPTG ; NAP THOI GIAN CHINH VAO 24C04
+                     663                     
+042B                 664     NM6:
+042B BC000C          665             CJNE CHE_DO,#0,NM7 ; KIEM TRA CHE DO = 0
+042E BD0209          666                     CJNE CHINH,#2,NM7 ; KIEM TRA CHINH = 2, GIOI HAN CHINH TU 0-1 KHI CHE DO = 
+                             0
+0431 7521FF          667                             MOV DEN_CHINH,#11111111B ; BAT DEN DO CHINH, KHI CHINH DEN DO
+0434 7D00            668                             MOV CHINH,#0 ; CHINH = 0 KHI CHE DO = 0
+0436 8C08            669                             MOV     8,CHE_DO
+0438 9176            670                             CALL NAPTG ; NAP THOI GIAN CHINH VAO 24C04
+043A                 671     NM7:
+043A BC030C          672             CJNE CHE_DO,#3,TNM ; KIEM TRA CHE DO = 0
+043D BD0209          673                     CJNE CHINH,#2,TNM ; KIEM TRA CHINH = 2, GIOI HAN CHINH TU 0-1 KHI CHE DO = 
+                             0
+0440 7521FF          674                             MOV DEN_CHINH,#11111111B ; BAT DEN DO CHINH, KHI CHINH DEN DO
+0443 7D00            675                             MOV CHINH,#0 ; CHINH = 0 KHI CHE DO = 0
+0445 8C08            676                             MOV     8,CHE_DO
+0447 9176            677                             CALL NAPTG ; NAP THOI GIAN CHINH VAO 24C04
+0449                 678     TNM:
+0449 22              679             RET
+                     680     ;======================================== 
+                     681     ;CHUONG TRINH TAO THOI GIAN TRE 1 S CO GOI QUET LIEN TUC
+044A                 682     TRE:
+044A C000            683             PUSH 0
+044C 7814            684             MOV R0,#20 ;NAP SO LAN LAP 20 LAN
+044E 758901          685             MOV TMOD,#01h ;DAT CHE DO TIMER 0 16 BIT
+0451                 686     LOOP2:
+0451 758C40          687             MOV TH0,#HIGH(-49000) ;NAP GIA TRI CHO TIMER
+0454 758A98          688             MOV TL0,#LOW(-49000) ;XAP SI 0,05 S
+0457 D28C            689             SETB TR0 ;CHO PHEP TIMER HOAT DONG
+0459                 690     QUET:
+0459 5129            691             CALL QUET_PHIM_NHAN
+045B 31BA            692             CALL HIENTHI ;GOI CHUONG TRINH CON QUET LED HIEN THI
+045D 308DF9          693             JNB TF0,QUET ;LAP LAI TOI KHI TIMER TRAN
+0460 C28C            694             CLR TR0 ;TAT TIMER
+0462 C28D            695             CLR TF0 ;XOA CO BAO TRAN
+0464 D8EB            696             DJNZ R0,LOOP2 ; LAP LAI 20 LAN
+0466 B202            697             CPL BIT_GIAY
+0468 D000            698             POP 0
+046A 22              699             RET
+                     700     ;====================
+                     701     ;VUNG DU LIEU
+046B                 702     MA7DOAN:                                ;MA LED 7 DOAN
+046B 039F250D        703     DB              03H,9FH,25H,0DH,99H,49H,41H,1EH,01H,09H,0FFH
+046F 9949411E                
+0473 0109FF                  
+                     704     ;======================================== 
+  00B6               705             SCL BIT P3.6 ;CHAN SCL NOI DEN ROM
+  00B7               706             SDA BIT P3.7 ;CHAN SDA NOI DEN ROM                                       
+                     707     
+  00A0               708             W2404 EQU 10100000B ; 24C04 LENH GHI
+  00A1               709             R2404 EQU 10100001B ; 24C04 LENH DOC
+A51 MACRO ASSEMBLER  HELLO                                                                09/25/2020 17:42:43 PAGE    12
+
+                     710     ;======================================== 
+  0007               711     ACK BIT 20H.7 ; BIT THUA NHAN
+                     712     ;======================================== 
+0476                 713     NAPTG: ; NAP THOI GIAN VAO EEPROM
+0476 91E6            714             CALL START_BIT ; STATR BIT
+0478 74A0            715             MOV A,#W2404 ; NAP CHE DO GHI VAO EEPROM
+047A B10E            716             CALL SENT_BYTE ;GHI BYTE VAO TRC
+047C 7400            717             MOV     A,#0 ;NAP DIA CHI VAO RTC
+047E B10E            718             CALL SENT_BYTE
+0480 EC              719             MOV A,CHE_DO
+0481 B10E            720             CALL SENT_BYTE ;GHI BYTE VAO EEPROM TU DONG TANG DIA CHI
+0483 E52E            721             MOV     A,TGD11
+0485 B10E            722             CALL SENT_BYTE
+0487 E52D            723             MOV     A,TGX11
+0489 B10E            724             CALL SENT_BYTE
+048B E52C            725             MOV     A,TGV11
+048D B10E            726             CALL SENT_BYTE
+048F E529            727             MOV     A,TGV21
+0491 B10E            728             CALL SENT_BYTE
+                     729             
+0493 E528            730             MOV     A,TGD12
+0495 B10E            731             CALL SENT_BYTE
+0497 E527            732             MOV     A,TGX12
+0499 B10E            733             CALL SENT_BYTE
+049B E526            734             MOV     A,TGV12
+049D B10E            735             CALL SENT_BYTE
+049F E523            736             MOV     A,TGV22
+04A1 B10E            737             CALL SENT_BYTE
+                     738             
+04A3 74AA            739             MOV     A,#0AAH
+04A5 B10E            740             CALL SENT_BYTE
+04A7 91F0            741             CALL STOP_BIT ;GOI STOP BIT
+04A9 22              742             RET ; TROAT KHOI CHUONG TRINH CON 
+                     743     ;======================================== 
+04AA                 744     DOC_TG: ;DOC THOI GIAN
+04AA 91E6            745             CALL START_BIT ; STATR BIT
+04AC 74A0            746             MOV     A,#W2404 ; NAP CHE DO GHI VAO EEPROM
+04AE B10E            747             CALL SENT_BYTE ; GHI 1 BYTE
+04B0 7400            748             MOV     A,#0 ; MAP DIA CHI BAN DAU = 0
+04B2 B10E            749             CALL SENT_BYTE
+04B4 91E6            750             CALL START_BIT ; LENH RESTART
+04B6 74A1            751             MOV A,#R2404  ; NAP CHE DO DOC VAO EEPROM 
+04B8 B10E            752             CALL SENT_BYTE
+04BA C207            753             CLR ACK ; XOA BIT THUA NHAN( CHO PHEP GHI LIEN TUC, DIA CHI TU DONG TANG )
+04BC B121            754             CALL READ_BYTE
+04BE FC              755             MOV CHE_DO,A
+                     756             
+04BF B121            757             CALL READ_BYTE
+04C1 F52E            758             MOV TGD11,A
+04C3 B121            759             CALL READ_BYTE
+04C5 F52D            760             MOV TGX11,A
+04C7 B121            761             CALL READ_BYTE
+04C9 F52C            762             MOV TGV11,A
+04CB B121            763             CALL READ_BYTE
+04CD F529            764             MOV TGV21,A
+                     765             
+04CF B121            766             CALL READ_BYTE
+04D1 F528            767             MOV TGD12,A
+04D3 B121            768             CALL READ_BYTE
+04D5 F527            769             MOV TGX12,A
+04D7 B121            770             CALL READ_BYTE
+04D9 F526            771             MOV TGV12,A
+04DB B121            772             CALL READ_BYTE
+04DD F523            773             MOV TGV22,A
+04DF D207            774             SETB ACK ; DUNG CHE DO GHI LIEN TUC
+                     775             
+A51 MACRO ASSEMBLER  HELLO                                                                09/25/2020 17:42:43 PAGE    13
+
+04E1 B121            776             CALL READ_BYTE
+04E3 91F0            777             CALL STOP_BIT
+04E5 22              778             RET ; TROAT KHOI CHUONG TRINH CON 
+                     779     ;======================================== 
+04E6                 780     START_BIT: ; BIT START I2C
+04E6 D2B7            781             SETB SDA ; DUA SDA LEN MUC CAO
+04E8 D2B6            782             SETB SCL ;DUA CHAN SCL LEN MUC CAO
+04EA 00              783             NOP
+04EB C2B7            784             CLR SDA ; DUA SDA XUONG THAP
+04ED C2B6            785             CLR SCL ; DUA SCL XUONG THAP
+04EF 22              786             RET ; TROAT KHOI CHUONG TRINH CON 
+                     787     ;======================================== 
+04F0                 788     STOP_BIT: ; BIT STOP I2C                                
+04F0 C2B7            789             CLR     SDA     ; DUA SDA XUONG THAP
+04F2 D2B6            790             SETB SCL ; DUA CHAN SCL LEN MUC CAO
+04F4 00              791             NOP
+04F5 D2B7            792             SETB SDA ; DUA SDA LEN MUC CAO
+04F7 22              793             RET ; TROAT KHOI CHUONG TRINH CON 
+                     794     ;========================================
+04F8                 795     ACK_BIT: ; DOC BIT THUA NHAN TU SLEVER
+04F8 D2B7            796             SETB SDA ; DUA SDA LEN MUC CAO
+04FA D2B6            797             SETB SCL ; DUA CHAN SCL LEN MUC CAO
+04FC 00              798             NOP
+04FD A2B7            799             MOV C,SDA ; DOC BIT THUA NHAN
+04FF 9207            800             MOV ACK,C ; NAP ACK BIT BIT THUA NHAN
+0501 C2B6            801             CLR     SCL ; DUA SCL XUONG THAP
+0503 22              802             RET ; TROAT KHOI CHUONG TRINH CON 
+                     803     ;========================================
+0504                 804     ACK_BIT_MASTER: ; TAO BIT THUA NHAN TU MASTER
+0504 C2B7            805             CLR SDA ; DUA SDA XUONG THAP
+0506 D2B6            806             SETB SCL ; DUA CHAN SCL LEN MUC CAO
+0508 00              807             NOP
+0509 C2B6            808             CLR     SCL     ; DUA SCL XUONG THAP
+050B D2B7            809             SETB SDA ; DUA SDA LEN CAO
+050D 22              810             RET ; TROAT KHOI CHUONG TRINH CON 
+                     811     ;========================================  
+050E                 812     SENT_BYTE: ; GHI 1 BYTE DU LIEU                                                            
+                                           
+050E C000            813             PUSH 0 ; CAT TAM THOI GIA TRI THANH GHI R0 VAO NGAN XEP 
+0510 7808            814             MOV R0,#8 ; NAP SO LAN LAP 8 LAN
+0512                 815     SB0:
+0512 33              816             RLC A ; DICH TRAI CO CO C A, BIT CAO DUOC PHAT TRUOC
+0513 92B7            817             MOV SDA,C ; PHAI BIT RA SDA
+0515 D2B6            818             SETB SCL ; DUA SCL LEN MUC CAO, TAO  XUNG NHIP
+0517 00              819             NOP                                                                                
+                                                            
+0518 C2B6            820             CLR SCL ; DUA SCL XUONG THAP
+051A D8F6            821             DJNZ R0,SB0 ; LAP LAI DU 8 LAN
+051C 91F8            822             CALL ACK_BIT ; DOC BIT THUA NHAN
+051E D000            823             POP 0 ;LAY GIA TRI CHO THANH GHI R0 TU NGAN XEP 
+0520 22              824             RET ; TRO VE CHUONG TRINH GOI NO
+                     825     ;======================================== 
+0521                 826     READ_BYTE: ; DOC 1 BYTE DU LIEU
+0521 C000            827             PUSH 0 ; CAT TAM GIA TRI THANH GHI R0 VAO NGAN XEP                                 
+                                  
+0523 7808            828             MOV R0,#8 ; NAP SO LAN LAP 8 LAN CHO 8 BIT
+0525                 829     RB0:
+0525 D2B6            830             SETB SCL ; DUA CHAN SCL LEN MUC CAO
+0527 A2B7            831             MOV C,SDA ; DOC BIT TU CHAN SDA
+0529 C2B6            832             CLR SCL ; DUA SCL XUONG THAP
+052B 33              833             RLC A ; DICH TRAI CO CO A, NHAN BYTE CAO TRUOC
+052C D8F7            834             DJNZ R0,RB0 ; LAP LAI DU 8 BIT
+052E 200704          835             JB ACK,RB1 ; THUA NHAN TU MASTER HAY KHONG THUA NHAN
+0531 B104            836             CALL ACK_BIT_MASTER     ; THUA NHAN TU MASTER KHI ACK = 0, DOC LIEN TIEP DU LIEU
+0533 8002            837             JMP RB2
+0535                 838     RB1:
+A51 MACRO ASSEMBLER  HELLO                                                                09/25/2020 17:42:43 PAGE    14
+
+0535 91F8            839             CALL ACK_BIT ; KHONG THUA NHAN TU MASTER, KET THUC DOC
+0537                 840     RB2:
+0537 D000            841             POP 0 ;LAY LAI GIA TRI CHO THANH GHI R0 TU NGAN XEP 
+0539 22              842             RET
+                     843     ;====================
+                     844     END
+A51 MACRO ASSEMBLER  HELLO                                                                09/25/2020 17:42:43 PAGE    15
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+ACC. . . . . . . .  D ADDR   00E0H   A   
+ACK. . . . . . . .  B ADDR   0020H.7 A   
+ACK_BIT. . . . . .  C ADDR   04F8H   A   
+ACK_BIT_MASTER . .  C ADDR   0504H   A   
+B. . . . . . . . .  D ADDR   00F0H   A   
+BAT_DO1. . . . . .  C ADDR   0121H   A   
+BAT_VANG1. . . . .  C ADDR   0147H   A   
+BAT_VANG2. . . . .  C ADDR   0155H   A   
+BAT_XANH1. . . . .  C ADDR   0134H   A   
+BIT_GIAY . . . . .  B ADDR   0020H.2 A   
+BT . . . . . . . .  B ADDR   0090H.3 A   
+CHE_DO . . . . . .    REG    R4          
+CHINH. . . . . . .    REG    R5          
+CHUONG_TRINH_1 . .  C ADDR   0049H   A   
+CHUONG_TRINH_2 . .  C ADDR   0062H   A   
+CHUONG_TRINH_3 . .  C ADDR   009FH   A   
+CHUONG_TRINH_4 . .  C ADDR   00DCH   A   
+CHUONG_TRINH_5 . .  C ADDR   011FH   A   
+CT31 . . . . . . .  C ADDR   00A8H   A   
+CT32 . . . . . . .  C ADDR   00B5H   A   
+CT33 . . . . . . .  C ADDR   00C4H   A   
+CT34 . . . . . . .  C ADDR   00D1H   A   
+CT41 . . . . . . .  C ADDR   00E5H   A   
+CT42 . . . . . . .  C ADDR   00F1H   A   
+CT43 . . . . . . .  C ADDR   0101H   A   
+CT44 . . . . . . .  C ADDR   010DH   A   
+DD1. . . . . . . .  B ADDR   00B0H.5 A   
+DD2. . . . . . . .  B ADDR   00B0H.2 A   
+DEL. . . . . . . .  C ADDR   021EH   A   
+DELAY. . . . . . .  C ADDR   0218H   A   
+DEN_CHINH. . . . .  N NUMB   0021H   A   
+DOC_TG . . . . . .  C ADDR   04AAH   A   
+DOIMA. . . . . . .  C ADDR   0188H   A   
+DV1. . . . . . . .  B ADDR   00B0H.4 A   
+DV2. . . . . . . .  B ADDR   0090H.7 A   
+DX1. . . . . . . .  B ADDR   00B0H.3 A   
+DX2. . . . . . . .  B ADDR   0090H.4 A   
+GIAM . . . . . . .  B ADDR   0090H.1 A   
+HIENTHI. . . . . .  C ADDR   01BAH   A   
+HT2. . . . . . . .  C ADDR   01EBH   A   
+LB . . . . . . . .  B ADDR   0080H.0 A   
+LC . . . . . . . .  B ADDR   00A0H.1 A   
+LD . . . . . . . .  B ADDR   00A0H.2 A   
+LED_CHINH. . . . .  B ADDR   0020H.1 A   
+LL . . . . . . . .  B ADDR   00A0H.3 A   
+LM . . . . . . . .  B ADDR   00A0H.0 A   
+LOOP2. . . . . . .  C ADDR   0451H   A   
+M1 . . . . . . . .  C ADDR   006BH   A   
+M2 . . . . . . . .  C ADDR   0078H   A   
+M3 . . . . . . . .  C ADDR   0087H   A   
+M4 . . . . . . . .  C ADDR   0094H   A   
+MA7DOAN. . . . . .  C ADDR   046BH   A   
+MAIN . . . . . . .  C ADDR   0000H   A   
+MAIN1. . . . . . .  C ADDR   0043H   A   
+MODE . . . . . . .  B ADDR   0090H.0 A   
+MP1. . . . . . . .  C ADDR   0027H   A   
+NAPTG. . . . . . .  C ADDR   0476H   A   
+NG0. . . . . . . .  C ADDR   0264H   A   
+NG1. . . . . . . .  C ADDR   0268H   A   
+NG10 . . . . . . .  C ADDR   0278H   A   
+A51 MACRO ASSEMBLER  HELLO                                                                09/25/2020 17:42:43 PAGE    16
+
+NG11 . . . . . . .  C ADDR   027DH   A   
+NG13 . . . . . . .  C ADDR   028AH   A   
+NG2. . . . . . . .  C ADDR   0291H   A   
+NG20 . . . . . . .  C ADDR   02A1H   A   
+NG21 . . . . . . .  C ADDR   02A6H   A   
+NG23 . . . . . . .  C ADDR   02B3H   A   
+NG3. . . . . . . .  C ADDR   02BAH   A   
+NG30 . . . . . . .  C ADDR   02CAH   A   
+NG31 . . . . . . .  C ADDR   02CFH   A   
+NG33 . . . . . . .  C ADDR   02DCH   A   
+NG4. . . . . . . .  C ADDR   02E3H   A   
+NG40 . . . . . . .  C ADDR   02F3H   A   
+NG41 . . . . . . .  C ADDR   02F8H   A   
+NG43 . . . . . . .  C ADDR   0305H   A   
+NHAN_GIAM. . . . .  C ADDR   0259H   A   
+NHAN_MODE. . . . .  C ADDR   03C5H   A   
+NHAN_TANG. . . . .  C ADDR   030FH   A   
+NKN. . . . . . . .  C ADDR   0249H   A   
+NM1. . . . . . . .  C ADDR   03CFH   A   
+NM11 . . . . . . .  C ADDR   03DEH   A   
+NM2. . . . . . . .  C ADDR   03E4H   A   
+NM21 . . . . . . .  C ADDR   03F0H   A   
+NM3. . . . . . . .  C ADDR   03F6H   A   
+NM31 . . . . . . .  C ADDR   0402H   A   
+NM4. . . . . . . .  C ADDR   0408H   A   
+NM41 . . . . . . .  C ADDR   0414H   A   
+NM5. . . . . . . .  C ADDR   041AH   A   
+NM6. . . . . . . .  C ADDR   042BH   A   
+NM7. . . . . . . .  C ADDR   043AH   A   
+NT0. . . . . . . .  C ADDR   031AH   A   
+NT1. . . . . . . .  C ADDR   031EH   A   
+NT10 . . . . . . .  C ADDR   032EH   A   
+NT11 . . . . . . .  C ADDR   0333H   A   
+NT13 . . . . . . .  C ADDR   0340H   A   
+NT2. . . . . . . .  C ADDR   0347H   A   
+NT20 . . . . . . .  C ADDR   0357H   A   
+NT21 . . . . . . .  C ADDR   035CH   A   
+NT23 . . . . . . .  C ADDR   0369H   A   
+NT3. . . . . . . .  C ADDR   0370H   A   
+NT30 . . . . . . .  C ADDR   0380H   A   
+NT31 . . . . . . .  C ADDR   0385H   A   
+NT33 . . . . . . .  C ADDR   0392H   A   
+NT4. . . . . . . .  C ADDR   0399H   A   
+NT40 . . . . . . .  C ADDR   03A9H   A   
+NT41 . . . . . . .  C ADDR   03AEH   A   
+NT43 . . . . . . .  C ADDR   03BBH   A   
+ON_DINH. . . . . .  C ADDR   000EH   A   
+P0 . . . . . . . .  D ADDR   0080H   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+P2 . . . . . . . .  D ADDR   00A0H   A   
+P3 . . . . . . . .  D ADDR   00B0H   A   
+PL . . . . . . . .  D ADDR   0080H   A   
+PN . . . . . . . .  B ADDR   0020H.0 A   
+QPN1 . . . . . . .  C ADDR   0237H   A   
+QPN2 . . . . . . .  C ADDR   0240H   A   
+QUET . . . . . . .  C ADDR   0459H   A   
+QUET_PHIM_NHAN . .  C ADDR   0229H   A   
+R2404. . . . . . .  N NUMB   00A1H   A   
+RB0. . . . . . . .  C ADDR   0525H   A   
+RB1. . . . . . . .  C ADDR   0535H   A   
+RB2. . . . . . . .  C ADDR   0537H   A   
+READ_BYTE. . . . .  C ADDR   0521H   A   
+SB0. . . . . . . .  C ADDR   0512H   A   
+SCL. . . . . . . .  B ADDR   00B0H.6 A   
+SDA. . . . . . . .  B ADDR   00B0H.7 A   
+SENT_BYTE. . . . .  C ADDR   050EH   A   
+A51 MACRO ASSEMBLER  HELLO                                                                09/25/2020 17:42:43 PAGE    17
+
+SP . . . . . . . .  D ADDR   0081H   A   
+START_BIT. . . . .  C ADDR   04E6H   A   
+STOP_BIT . . . . .  C ADDR   04F0H   A   
+TANG . . . . . . .  B ADDR   0090H.2 A   
+TF0. . . . . . . .  B ADDR   0088H.5 A   
+TG1. . . . . . . .    REG    R7          
+TG2. . . . . . . .    REG    R6          
+TGD11. . . . . . .  N NUMB   002EH   A   
+TGD12. . . . . . .  N NUMB   0028H   A   
+TGD21. . . . . . .  N NUMB   002BH   A   
+TGD22. . . . . . .  N NUMB   0025H   A   
+TGV11. . . . . . .  N NUMB   002CH   A   
+TGV12. . . . . . .  N NUMB   0026H   A   
+TGV21. . . . . . .  N NUMB   0029H   A   
+TGV22. . . . . . .  N NUMB   0023H   A   
+TGX11. . . . . . .  N NUMB   002DH   A   
+TGX12. . . . . . .  N NUMB   0027H   A   
+TGX21. . . . . . .  N NUMB   002AH   A   
+TGX22. . . . . . .  N NUMB   0024H   A   
+TG_CHINH . . . . .  N NUMB   0022H   A   
+TH0. . . . . . . .  D ADDR   008CH   A   
+THT. . . . . . . .  C ADDR   0217H   A   
+TINH_TG. . . . . .  C ADDR   0163H   A   
+TL0. . . . . . . .  D ADDR   008AH   A   
+TMOD . . . . . . .  D ADDR   0089H   A   
+TNG. . . . . . . .  C ADDR   030CH   A   
+TNG1 . . . . . . .  C ADDR   028DH   A   
+TNG2 . . . . . . .  C ADDR   02B6H   A   
+TNG3 . . . . . . .  C ADDR   02DFH   A   
+TNG4 . . . . . . .  C ADDR   0308H   A   
+TNM. . . . . . . .  C ADDR   0449H   A   
+TNT. . . . . . . .  C ADDR   03C2H   A   
+TNT1 . . . . . . .  C ADDR   0343H   A   
+TNT2 . . . . . . .  C ADDR   036CH   A   
+TNT3 . . . . . . .  C ADDR   0395H   A   
+TNT4 . . . . . . .  C ADDR   03BEH   A   
+TQPN . . . . . . .  C ADDR   0256H   A   
+TR0. . . . . . . .  B ADDR   0088H.4 A   
+TRE. . . . . . . .  C ADDR   044AH   A   
+W2404. . . . . . .  N NUMB   00A0H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)
